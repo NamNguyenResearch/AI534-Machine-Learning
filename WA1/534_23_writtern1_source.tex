@@ -1,0 +1,217 @@
+\documentclass{article}
+\usepackage{amsmath,color}
+\usepackage{graphicx}
+\usepackage{epsf}
+\usepackage{hyperref}
+% titlepage causes separate title page
+% our latex is biased off 1in vertically and horizontally
+\newtheorem{theorem}{Theorem}
+\setlength{\topmargin}{0.1in}
+\setlength{\oddsidemargin}{0in}
+\setlength{\evensidemargin}{0in}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{0in}
+\setlength{\textheight}{9in}
+\setlength{\textwidth}{6.5in}
+% require that floats fill 90% of a page in order for that page to be
+% ``float-only''
+\renewcommand{\dblfloatpagefraction}{0.9}
+\renewcommand{\floatpagefraction}{0.9}
+\newenvironment{bibparagraph}{\begin{list}{}{ %
+    \setlength{\labelsep}{-\leftmargin} %
+    \setlength{\labelwidth}{0pt} %
+    \setlength{\itemindent}{-\leftmargin} %
+    \setlength{\listparindent}{0pt}}}{\end{list}}
+\def\makefigure#1#2{\begin{figure}
+\begin{center}
+\input{#1}
+\end{center}
+\caption{#2}
+\label{#1}
+\end{figure}}
+
+\def\limplies{\; \supset \;}
+\def\land{\: \wedge \:}
+\def\lor{\: \vee \:}
+\def\iff{\; \equiv \;}
+\def\lnot{\neg}
+\def\lforall#1{\forall \: #1 \;}
+\def\lexists#1{\exists \: #1 \;}
+\def\glitch#1{{\tt #1}} % glitch on
+\def\comment#1{}
+\def\pnil{[\;]}
+\def\pif{\; \mbox{\tt :- } \;}
+\def\tuple#1{$\langle #1\rangle$}
+\def\mtuple#1{\langle #1\rangle}
+\def\ceiling#1{\lceil #1\rceil}
+\def\floor#1{\lfloor #1\rfloor}
+\def\centerps#1{\begin{center}
+\leavevmode
+\epsfbox{#1}
+\end{center}}
+\def\argmax{\mathop{\rm argmax}}
+\def\argmin{\mathop{\rm argmin}}
+\def\grad{\nabla\!}
+\def\celsius{^\circ\mbox{C}}
+\long\def\answer#1{}  % comment out for solutions
+\long\def\question#1{#1} % comment out for solutions
+%\long\def\answer#1{{\color {blue} {\sl #1}}}  % comment in for solution
+%\long\def\question#1{} % comment in for solution
+\newcommand{\mb}[1]{{\mathbf{#1}}}
+\def\x{{\bf x}}
+\def\w{{\bf w}}
+
+\begin{document}
+{\Large
+\begin{center}
+AI534 --- Written Homework Assignment 1 (35 pts + 8 bonus) 
+\end{center}
+}
+\noindent This written assignment covers the contents of linear regression and logistic regression. The key concepts covered here include:
+\begin{itemize}
+    \item Maximum likelihood estimation  (MLE)
+    \item Gradient descent learning
+    \item Decision theory for probabilistic classifiers
+    \item Maximum A Posteriori (MAP) parameter estimation 
+    \item Perceptron
+\end{itemize}
+\begin{enumerate}
+\item (MLE for uniform distribution) (3 pts) Given a set of i.i.d. observed samples $x_1,x_2,...,x_n\sim$ uniform$(0,\theta)$, we wish to estimate the parameter $\theta$.
+\begin{enumerate}
+\item (1 pt) Write down the likelihood function of $\theta$.\\
+\answer{Your solution goes here.
+ }
+ \item (2 pts) Derive the maximum likelihood estimation for $\theta$, which is the value for $theta$ that maximizes the function of part (a). (Hint: for the likelihood function is a monotonic function. So the maximizing solution is at the extreme, no need for taking derivative.)\\
+\answer{Your solution goes here.
+}.
+\end{enumerate}
+
+\item (Weighted linear regression) (10 pts) In class when discussing linear regression, we assume that the Gaussian noise is iid (identically independently distributed). In practice, we may have some extra information regarding the fidelity of each data point. For example, we may know that some examples have higher noise variance than others. To model this, we can model the noise variable $\epsilon_i, \epsilon_2, \cdots \epsilon_n$ as distinct Gassians, i.e., $\epsilon_i \sim N(0, \sigma_i^2)$ with known variance $\sigma_i^2$. How will this influence our linear regression model? Let's work it out.
+
+ \begin{enumerate}
+    \item (3pts) Write down the log likelihood function of $\mathbf{w}$ under this new modeling assumption.\\
+        \answer{Your solution goes here.
+}
+    \item (1pts) Show that maximizing the log likelihood is equivalent to minimizing a \textbf{weighted square loss function} $J(\mathbf{W}) = \sum_{i=1}^na_i(\mathbf{w}^T\mathbf{x}_i-y_i)^2$, and express each $a_i$ in terms of $\sigma_i$.\\
+        \answer{Your solution goes here.}
+    \item (3 pts) Derive a batch gradient descent update rule for optimizing this objective.\\
+\answer{Your solution goes here.
+}
+    \item (3 pts) Derive a closed form solution to this optimization problem. Hint: begin by rewrite the objective into matrix form using a diagonal matrix $A$ with $A(i,i)=a_i$.\\
+    \answer{
+    Your solution goes here.
+}
+\end{enumerate}
+
+\item (Decision theory) (10 pts) For this problem, we will work through an scenario where using the Maximum A-Posteriori decision rule as described in class is not appropriate.  Consider a spam filter that gives a probabilistic prediction for each email being a spam.  Critically, there is a cost associated with filtering out non-spam emails as well as letting spam email through. But the cost is not symmetric. The following table specifies the costs. 
+\begin{table}[h]
+    \centering
+ \begin{tabular}{|r|c|c|}\hline
+  \multicolumn{1}{|c|}{predicted} & \multicolumn{2}{c|}{true label $y$}\\ \cline{2-3}
+ \multicolumn{1}{|c|}{label $\hat{y}$} & \ \ \ non-spam\ \ \ \   & spam \\ \hline
+ non-spam     & 0 & 1 \\ \hline
+ spam     & 10 &  0 \\ \hline
+ \end{tabular}
+    \caption{A mis-classification cost matrix for the spam filter problem.}
+    \label{tab:my_label}
+\end{table}
+\begin{center}
+
+ \end{center}
+As you can see, if the prediction is correct, there is no cost. But if you mis-classify a non-spam email as a spam, there is a significantly higher cost (10) than the other way around (1). 
+
+Here we will go through some questions to help you figure out how to use the probability to make filtering decisions.
+\begin{enumerate}
+    \item (2 pt) For a given email $\x$, the spam filter predicts it being a spam with $p= 0.8$, what is the expected cost of classifying it as $spam$? \\
+\answer{Your solution goes here.}
+
+\item (2 pt) We want to minimize the expected cost, how should we classify this particular email? \\
+\answer{Your solution goes here. }
+
+\item (3pts)  As you can see from parts (a) and (b), using the MAP decision rule (aka comparing $p$ to 0.5) to make prediction for this email is not appropriate and leads to higher expected mis-classification cost. Please devise a decision rule that compares $p$, the predicted probability of being spam, to a new threshold $\theta$ such that we can minimize the expected misclassification cost based on the costs specified in Table 1.\\
+\answer{Your soultion goes here.
+}
+\item (3pts) Can you provide a cost table for which the decision rule minimizing the expected misclassification cost would use a $\theta = 1/5$? Please provide the proof that your cost matrix gives $\theta=1/5$.
+\answer{Your solution goes here.}
+\end{enumerate}
+
+\item (8 pts) (Maximum A-Posteriori Estimation.)
+Suppose we observe the values of $n$ IID random variables $X_1, \dots , X_n$ drawn from a single Bernoulli
+distribution with parameter $\theta$. In other words, for each $X_i$, we know that $P(X_i = 1) =\theta$ and $P(X_i = 0) = 1- \theta$.
+In the Bayesian framework, we treat $\theta$ as a random variable, and use a prior probability distribution over $\theta$ to express our prior knowledge/preference about $\theta$. In this framework,  $X_1, \dots, X_n$ can be viewed as generated by:
+\begin{itemize}
+\item First, the value of $\theta$ is drawn from a given prior probability distribution
+\item Second, $X_1, \dots, X_n$ are drawn independently from a Bernoulli distribution with this $\theta$ value.
+\end{itemize}
+In this setting, Maximum A-Posteriori (MAP) estimation is a natural way to estimate the value of $\theta$ by choosing the most probable value given both its prior distribution and the observed data $X_1, \dots , X_n$. Specifically, the MAP estimation of $\theta$ is given by
+%\begin{equation}
+\begin{align*}
+\hat{\theta}_{MAP} & = \argmax_{\hat{\theta}}P(\theta=\hat{\theta}|X_1,\dots, X_n)\\
+&=\argmax_{\hat{\theta}}P(X_1,\dots,X_n|\theta = \hat{\theta} )P(\theta=\hat{\theta})\\
+& = \argmax_{\hat{\theta}}L(\hat{\theta})p(\hat{\theta})
+\end{align*}
+%\end{equation}
+where $L(\hat{\theta})$ is the data likelihood function and $p(\hat{\theta})$ is the density function of the prior.  Now consider using a beta distribution for prior: $\theta \sim Beta(\alpha, \beta)$, whose PDF function is
+\[p(\hat{\theta}) = \frac{\hat{\theta}^{(\alpha-1)}(1-\hat{\theta})^{(\beta-1)}}{B(\alpha, \beta)}\]
+where $B(\alpha, \beta)$ is a normalizing constant to make it a proper probability density function.
+
+\begin{enumerate}
+\item (4 pts) Derive the posterior distribution $p(\hat{\theta}|X_1, \dots, X_n, \alpha, \beta)$ and show that it is also a Beta distribution. 
+\answer{Your solution goes here.
+}
+\item (4 pts) Suppose we use $Beta(2,2)$ as the prior, what is the posterior distribution of $\theta$ after we observe $5$ coin tosses and $2$ of them are head? What is the posterior distribution of $\theta$ after we observe $50$ coin tosses and $20$ of them are head? Plot the pdf function of the prior as well as the two posterior distributions (you can use any software for this). Assume that $\theta=0.4$ is the true probability, as we observe more and more coin tosses from this coin, what do you expect to happen to the posterior?
+
+\answer{Your solution goes here.
+}
+
+\end{enumerate}
+
+\item (Perceptron) (4 pts)  Assume a data set consists only of a single data point $\{(x,+1)\}$. How many times would the Perceptron algorithm mis-classify this point $\x$ before convergence? What if the initial weight vector $\w_0$ was initialized randomly and not as the all-zero vector?
+
+\begin{enumerate}
+\item (1 pts) Case 1: $\w_0 = 0$. 
+
+    \answer{Your solution goes here.}
+
+\item (3 pts) Case 2: $\w_0 !=0$ (please derive the solution as a function of $\w_0$ and $\x$.):
+
+\answer{Your solution goes here.}
+\end{enumerate}
+
+
+\item (Bonus: 8 pts) Consider the maximum likelihood estimation problem for multi-class logistic regression using the soft-max function defined below:
+\[p(y=k|\mathbf{x}) = \frac{\exp(\mathbf{w}_k^T\mathbf{x})}{\sum_{j=1}^K \exp(\mathbf{w}_j^T\mathbf{x})}\]
+
+We can write out the likelihood function as:
+\[ L({\mb w})=\prod_{i=1}^N\prod_{k=1}^K p(y=k|{\mb x}_i)^{y_{ik}}\] where $y_{ik}$ is an indicator variable taking value 1 if $y_i=k$.
+%\item What are $i$ and $k$ in this likelihood function?
+Please compute the log-likelihood function and the gradient of the log-likelihood function w.r.t the weight vector ${\mb w}_c$ of class $c$.  \footnote{Here are a few tips to help you work through the math. First, the Logistic regression lecture slide actually provides the solution to this problem. But you will need to fill in the missing derivation. Second, for a particular example $\x_i$, the denominator in the softmax function $\sum_j \exp(\w_j^T\x_i)$ is the same for all $k$. So denoting it as $z_i$ can make it simpler to work through the derivation. But be sure to remember that $z_i$ is a function of all $\w_k$'s)}
+\begin{table}[h]
+\centering
+\begin{tabular}{|r|c|c|}\hline
+\multicolumn{1}{|c|}{predicted} & \multicolumn{2}{c|}{true label y}\ \cline{2-3}
+\multicolumn{1}{|c|}{label 
+�
+^
+y
+^
+​
+ } & non-spam & spam \ \hline
+non-spam & 0 & 1 \ \hline
+spam & 5 & 0 \ \hline
+\end{tabular}
+\caption{Cost matrix for the decision rule with 
+�
+=
+1
+/
+5
+θ=1/5.}
+\end{table}
+
+\answer{
+Your solution goes here.
+}
+
+\end{enumerate}
+\end{document}
